@@ -70,9 +70,12 @@ const mapRenderResultTypeToState = (
 
 export const ToolHeader = ({ className, part, ...props }: ToolHeaderProps) => {
   const { state: rawState } = part;
-  const renderResult = renderRawOutput({ output: part.output });
+  const renderResult = renderRawOutput({
+    output: part.output,
+    type: part.type,
+  });
   const state =
-    rawState === "output-available"
+    rawState === "output-available" && part.type === "dynamic-tool"
       ? mapRenderResultTypeToState(renderResult.type)
       : rawState;
 
@@ -129,7 +132,10 @@ export type ToolOutputProps = ComponentProps<"div"> & {
 };
 
 export const ToolOutput = ({ className, part, ...props }: ToolOutputProps) => {
-  const renderResult = renderRawOutput({ output: part.output });
+  const renderResult = renderRawOutput({
+    output: part.output,
+    type: part.type,
+  });
   const errorText = part.errorText
     ? part.errorText
     : renderResult.type === "error"
@@ -163,9 +169,9 @@ export const ToolOutput = ({ className, part, ...props }: ToolOutputProps) => {
           <div className="flex items-center gap-2">
             <Link
               href={`https://${
-                process.env.NEXT_PUBLIC_NODE_ENV === "development"
-                  ? "sepolia."
-                  : ""
+                process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
+                  ? ""
+                  : "sepolia."
                 // @ts-expect-error
               }basescan.org/tx/${part.output.paymentInfo.transaction}`}
               target="_blank"
@@ -215,9 +221,18 @@ type RenderOutputResult =
 
 function renderRawOutput({
   output,
+  type,
 }: {
   output: ToolUIPart["output"];
+  type: ToolUIPart["type"] | DynamicToolUIPart["type"];
 }): RenderOutputResult {
+  if (type !== "dynamic-tool") {
+    return {
+      type: "success",
+      content: <Response>{JSON.stringify(output)}</Response>,
+    };
+  }
+
   const parseResult = ToolOutputSchema.safeParse(output);
   if (!parseResult.success) {
     console.error(parseResult.error);

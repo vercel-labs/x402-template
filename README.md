@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js + x402 Template
 
-## Getting Started
+[x402](https://x402.org) is a new protocol built on top of HTTP for doing fully accountless payments easily, quickly, cheaply and securely.
 
-First, run the development server:
+This template built with [Next.js](https://nextjs.org), [AI SDK](https://ai-sdk.dev), [AI Elements](https://ai-elements.dev), and [AI Gateway](https://vercel.com/ai-gateway) shows off basic usage of x402 to paywall APIs with just one middleware.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```ts
+export const middleware = paymentMiddleware("0x...your wallet address...", {
+  // pages
+  "/blog": {
+    price: "$0.01",
+  },
+  // api routes
+  "/api/math/get-random-number": {
+    price: "$0.05",
+  },
+  "/api/math/add": {
+    price: "$0.10",
+  },
+});
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## What is here?
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- On the `/` page, you can chat with a bot that has access to some tools. These tools call APIs that are protected by x402. You can use the "Payment" button to enable payments.
+- The `/blog` route is protected by x402, but only for bots. You can see what this is like for bots by using the `?bot=true` query parameter.
+- The `/api/bot` route shows off an ai-less use of x402
+  - It has two different "jobs" that can be run via the `job` query parameter
+  - `job=math` will run call the math APIs
+  - `job=blog` will scrape `/blog` and return its titles
+  - By default it has payments disabled, but you can enable them by setting the `enable-payment` header to `true`
+  - By default is not recognized as a bot, but you can enable that by setting the `user-agent` header to `bot`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## TODO
 
-## Learn More
+- [ ] Add x402 payments over to a remote MCP server
 
-To learn more about Next.js, take a look at the following resources:
+## To run locally
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Note**: In development, all transactions take place on the `base-sepolia` network or "testnet".
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+To get testnet funds, you can use the [Faucet in the Coinbase CDP portal](https://portal.cdp.coinbase.com/products/faucet?&token=USDC&network=base-sepolia). **Make sure to use the `base-sepolia` network and the `USDC` token.**
 
-## Deploy on Vercel
+1. Install dependencies:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+bun install
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Set the following environment variables:
+   - `X402_WALLET_ADDRESS` - the address payments will be sent to
+   - `X402_PRIVATE_KEY` - the private key of the wallet that will be used to sign payments
+
+If you don't have a wallet, you can create easily with [MetaMask](https://metamask.io).
+
+2. Run the development server:
+
+```bash
+bun run dev
+```
+
+3. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## To deploy
+
+1. Set the following environment variables:
+   - `CDP_API_KEY_ID` - the API key ID for the Coinbase CDP API
+   - `CDP_API_KEY_SECRET` - the API key secret for the Coinbase CDP API
+
+These are required to use Coinbase's mainnet facilitator in production.
+
+2. Sign into the [Coinbase CDP portal](https://portal.cdp.coinbase.com) and create an API key.
+
+3. Copy the API key ID and secret and set them as the environment variables.
+
+4. Deploy the app to Vercel.
