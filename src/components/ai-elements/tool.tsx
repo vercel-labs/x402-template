@@ -70,10 +70,7 @@ const mapRenderResultTypeToState = (
 
 export const ToolHeader = ({ className, part, ...props }: ToolHeaderProps) => {
   const { state: rawState } = part;
-  const renderResult = renderRawOutput({
-    output: part.output,
-    type: part.type,
-  });
+  const renderResult = renderRawOutput({ output: part.output });
   const state =
     rawState === "output-available" && part.type === "dynamic-tool"
       ? mapRenderResultTypeToState(renderResult.type)
@@ -129,18 +126,24 @@ export const ToolInput = ({ className, input, ...props }: ToolInputProps) => (
 
 export type ToolOutputProps = ComponentProps<"div"> & {
   part: ToolUIPart | DynamicToolUIPart;
+  network?: "base-sepolia" | "base";
 };
 
-export const ToolOutput = ({ className, part, ...props }: ToolOutputProps) => {
-  const renderResult = renderRawOutput({
-    output: part.output,
-    type: part.type,
-  });
+export const ToolOutput = ({
+  className,
+  part,
+  network,
+  ...props
+}: ToolOutputProps) => {
+  const renderResult =
+    part.type === "dynamic-tool"
+      ? renderRawOutput({ output: part.output })
+      : ({ type: "non-dynamic-tool", content: part.output } as const);
   const errorText = part.errorText
     ? part.errorText
     : renderResult.type === "error"
-    ? JSON.stringify(renderResult.content)
-    : undefined;
+      ? JSON.stringify(renderResult.content)
+      : undefined;
 
   if (!(part.output || errorText)) {
     return null;
@@ -158,10 +161,19 @@ export const ToolOutput = ({ className, part, ...props }: ToolOutputProps) => {
         )}
       >
         {errorText && <div>{errorText}</div>}
-        {renderResult.type === "success" ? renderResult.content : null}
+        {renderResult.type === "success" ? (
+          renderResult.content
+        ) : renderResult.type === "non-dynamic-tool" ? (
+          JSON.stringify(renderResult.content)
+        ) : renderResult.type === "failed-to-parse" ? (
+          <CodeBlock
+            code={JSON.stringify(renderResult.content, null, 2)}
+            language="json"
+          />
+        ) : null}
       </div>
       {/* @ts-expect-error */}
-      {part.output?.paymentInfo && (
+      {part.output?._meta?.["x402.payment-response"] && (
         <>
           <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
             <i>x402</i> Payment
@@ -169,22 +181,20 @@ export const ToolOutput = ({ className, part, ...props }: ToolOutputProps) => {
           <div className="flex items-center gap-2">
             <Link
               href={`https://${
-                process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
-                  ? ""
-                  : "sepolia."
+                network === "base-sepolia" ? "sepolia." : ""
                 // @ts-expect-error
-              }basescan.org/tx/${part.output.paymentInfo.transaction}`}
+              }basescan.org/tx/${part.output._meta["x402.payment-response"].transaction}`}
               target="_blank"
               className="hover:underline"
             >
               <div className="overflow-x-auto rounded-md text-xs [&_table]:w-full">
                 {/* @ts-expect-error */}
-                {part.output.paymentInfo.transaction}{" "}
+                {part.output._meta["x402.payment-response"].transaction}{" "}
               </div>
             </Link>
             <CopyToClipboardButton
               // @ts-expect-error
-              content={part.output.paymentInfo.transaction}
+              content={part.output._meta["x402.payment-response"].transaction}
             />
           </div>
         </>
@@ -221,21 +231,11 @@ type RenderOutputResult =
 
 function renderRawOutput({
   output,
-  type,
 }: {
   output: ToolUIPart["output"];
-  type: ToolUIPart["type"] | DynamicToolUIPart["type"];
 }): RenderOutputResult {
-  if (type !== "dynamic-tool") {
-    return {
-      type: "success",
-      content: <Response>{JSON.stringify(output)}</Response>,
-    };
-  }
-
   const parseResult = ToolOutputSchema.safeParse(output);
   if (!parseResult.success) {
-    console.error(parseResult.error);
     return {
       type: "failed-to-parse",
       content: output,

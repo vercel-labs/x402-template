@@ -1,39 +1,8 @@
-# Next.js + x402 Template
+# x402 + MCP + AI SDK Example
 
 [x402](https://x402.org) is a new protocol built on top of HTTP for doing fully accountless payments easily, quickly, cheaply and securely.
 
-This template built with [Next.js](https://nextjs.org), [AI SDK](https://ai-sdk.dev), [AI Elements](https://ai-elements.dev), and [AI Gateway](https://vercel.com/ai-gateway) shows off basic usage of x402 to paywall APIs with just one middleware.
-
-```ts
-export const middleware = paymentMiddleware("0x...your wallet address...", {
-  // pages
-  "/blog": {
-    price: "$0.01",
-  },
-  // api routes
-  "/api/math/get-random-number": {
-    price: "$0.05",
-  },
-  "/api/math/add": {
-    price: "$0.10",
-  },
-});
-```
-
-## What is here?
-
-- On the `/` page, you can chat with a bot that has access to some tools. These tools call APIs that are protected by x402. You can use the "Payment" button to enable payments.
-- The `/blog` route is protected by x402, but only for bots. You can see what this is like for bots by using the `?bot=true` query parameter.
-- The `/api/bot` route shows off an ai-less use of x402
-  - It has two different "jobs" that can be run via the `job` query parameter
-  - `job=math` will run call the math APIs
-  - `job=blog` will scrape `/blog` and return its titles
-  - By default it has payments disabled, but you can enable them by setting the `enable-payment` header to `true`
-  - By default is not recognized as a bot, but you can enable that by setting the `user-agent` header to `bot`
-
-## TODO
-
-- [ ] Add x402 payments over to a remote MCP server
+This template built with [Next.js](https://nextjs.org), [AI SDK](https://ai-sdk.dev), [AI Elements](https://ai-elements.dev), and [AI Gateway](https://vercel.com/ai-gateway) shows off using x402 with a remote MCP server.
 
 ## To run locally
 

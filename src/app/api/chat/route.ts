@@ -1,68 +1,50 @@
-import {
-  convertToModelMessages,
-  stepCountIs,
-  streamText,
-  tool,
-  UIMessage,
-} from "ai";
+import { convertToModelMessages, stepCountIs, streamText, UIMessage } from "ai";
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { experimental_createMCPClient as createMCPClient } from "ai";
+import { withPayment } from "x402-mcp";
+import { tool } from "ai";
+import z from "zod";
+import { getOrCreatePurchaserAccount } from "@/lib/accounts";
+import { env } from "@/lib/env";
 
 export const maxDuration = 30;
 
-import { addSchema, getRandomNumberSchema } from "@/lib/math";
-import { makeApiClient } from "@/lib/axios";
-import { Response as RandomNumberResponse } from "@/app/api/math/get-random-number/route";
-import { Response as AddResponse } from "@/app/api/math/add/route";
-
 export const POST = async (request: Request) => {
-  const {
-    messages,
-    model,
-    paymentEnabled,
-  }: { messages: UIMessage[]; model: string; paymentEnabled: boolean } =
+  const { messages, model }: { messages: UIMessage[]; model: string } =
     await request.json();
 
-  const api = makeApiClient({
-    enablePayment: paymentEnabled,
-  });
+  const account = await getOrCreatePurchaserAccount();
+
+  const mcpClient = await createMCPClient({
+    transport: new StreamableHTTPClientTransport(new URL("/mcp", env.URL)),
+  }).then((client) => withPayment(client, { account, network: env.NETWORK }));
+
+  const tools = await mcpClient.tools();
 
   const result = streamText({
     model,
     tools: {
-      getRandomNumber: tool({
-        description: "Get a random number between two numbers",
-        inputSchema: getRandomNumberSchema,
-        execute: async ({ min, max }) => {
-          const {
-            data: { randomNumber },
-          } = await api.post<RandomNumberResponse>(
-            "/api/math/get-random-number",
-            { min, max }
-          );
-          return randomNumber;
-        },
-      }),
-      add: tool({
-        description: "Add two numbers",
-        inputSchema: addSchema,
-        execute: async ({ a, b }) => {
-          const {
-            data: { result },
-          } = await api.post<AddResponse>("/api/math/add", { a, b });
-          return result;
+      ...tools,
+      "hello-local": tool({
+        description: "Receive a greeting",
+        inputSchema: z.object({
+          name: z.string(),
+        }),
+        execute: async (args) => {
+          return `Hello ${args.name}`;
         },
       }),
     },
     messages: convertToModelMessages(messages),
     stopWhen: stepCountIs(5),
-    system: `
-      You are a helpful assistant.
-      Note that some tools may be using the new "x402" protocol. This protocol uses the long reserved 402 status code to indicate that a tool requires payment to be used.
-      The user has an option to enable payments. There is nothing you need to do to process payments, if they are enabled, tool calls will work as normal.
-    `,
+    onFinish: async () => {
+      await mcpClient.close();
+    },
+    system: "ALWAYS prompt the user to confirm before authorizing payments",
   });
-
   return result.toUIMessageStreamResponse({
     sendSources: true,
     sendReasoning: true,
+    messageMetadata: () => ({ network: env.NETWORK }),
   });
 };

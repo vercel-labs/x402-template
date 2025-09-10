@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,11 +24,52 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
       >
-        {children}
+        <div className="size-full flex flex-col">
+          <header
+            className={`${geistSans.className} text-2xl font-bold border-b border-black`}
+          >
+            <div className="flex flex-row gap-2">
+              <h1>x402 AI Starter Kit</h1> -
+              <h2>
+                powered by:{" "}
+                <Link href="https://nextjs.org" className="underline">
+                  Next.js
+                </Link>
+                ,{" "}
+                <Link href="https://ai-sdk.dev" className="underline">
+                  AI SDK
+                </Link>
+                ,{" "}
+                <Link
+                  href="https://vercel.com/ai-gateway"
+                  className="underline"
+                >
+                  AI Gateway
+                </Link>
+                ,{" "}
+                <Link
+                  href="https://ai-sdk.dev/elements/overview"
+                  className="underline"
+                >
+                  AI Elements
+                </Link>
+                , and the{" "}
+                <Link
+                  href="https://docs.cdp.coinbase.com/"
+                  className="underline"
+                >
+                  Coinbase CDP
+                </Link>
+              </h2>
+            </div>
+          </header>
+
+          <main className="flex-1">{children}</main>
+        </div>
       </body>
     </html>
   );

@@ -22,6 +22,7 @@ import {
 import { useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { Response } from "@/components/ai-elements/response";
+import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
 
 import {
   Reasoning,
@@ -36,7 +37,6 @@ import {
   ToolInput,
   ToolOutput,
 } from "@/components/ai-elements/tool";
-import { CircleDollarSign } from "lucide-react";
 
 const models = [
   {
@@ -48,12 +48,22 @@ const models = [
     value: "google/gemini-2.0-flash-lite",
   },
 ];
+const suggestions = {
+  "Use a paid tool":
+    "Generate a random number between 1 and 10, then add it to 5.",
+  "What's my account balance?": "Check your account balance.",
+  "Use an unpaid remotetool":
+    "Please greet the user with 'hello-remote' by the name: 'user'",
+  "Use an unpaid local tool":
+    "Please greet the user with 'hello-local' by the name: 'user'",
+};
 
 const ChatBotDemo = () => {
   const [input, setInput] = useState("");
-  const [paymentEnabled, setPaymentEnabled] = useState(false);
   const [model, setModel] = useState<string>(models[0].value);
-  const { messages, sendMessage, status } = useChat();
+  const { messages, sendMessage, status } = useChat({
+    onError: (error) => console.error(error),
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +73,6 @@ const ChatBotDemo = () => {
         {
           body: {
             model: model,
-            paymentEnabled,
           },
         }
       );
@@ -71,10 +80,19 @@ const ChatBotDemo = () => {
     }
   };
 
-  console.log(messages);
+  const handleSuggestionClick = (suggestion: keyof typeof suggestions) => {
+    sendMessage(
+      { text: suggestions[suggestion] },
+      {
+        body: {
+          model: model,
+        },
+      }
+    );
+  };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 relative size-full h-screen">
+    <div className="w-full p-6 relative size-full max-w-4xl mx-auto">
       <div className="flex flex-col h-full">
         <Conversation className="h-full">
           <ConversationContent>
@@ -110,8 +128,12 @@ const ChatBotDemo = () => {
                           <ToolContent>
                             {/* @ts-expect-error */}
                             <ToolInput input={part.input} />
-                            {/* @ts-expect-error */}
-                            <ToolOutput part={part} />
+                            <ToolOutput
+                              // @ts-expect-error
+                              part={part}
+                              // @ts-expect-error
+                              network={message.metadata?.network}
+                            />
                           </ToolContent>
                         </Tool>
                       );
@@ -123,24 +145,37 @@ const ChatBotDemo = () => {
               </Message>
             ))}
             {status === "submitted" && <Loader />}
+            {status === "error" && <div>Something went wrong</div>}
           </ConversationContent>
           <ConversationScrollButton />
         </Conversation>
+
+        <Suggestions className="justify-center">
+          {Object.keys(suggestions).map((suggestion) => (
+            <Suggestion
+              key={suggestion}
+              suggestion={suggestion}
+              onClick={() =>
+                handleSuggestionClick(suggestion as keyof typeof suggestions)
+              }
+              variant="outline"
+              size="sm"
+            />
+          ))}
+        </Suggestions>
 
         <PromptInput onSubmit={handleSubmit} className="mt-4">
           <PromptInputTextarea
             onChange={(e) => setInput(e.target.value)}
             value={input}
+            ref={(ref) => {
+              if (ref) {
+                ref.focus();
+              }
+            }}
           />
           <PromptInputToolbar>
             <PromptInputTools>
-              <PromptInputButton
-                variant={paymentEnabled ? "default" : "ghost"}
-                onClick={() => setPaymentEnabled(!paymentEnabled)}
-              >
-                <CircleDollarSign size={16} />
-                <span>Payment</span>
-              </PromptInputButton>
               <PromptInputModelSelect
                 onValueChange={(value) => {
                   setModel(value);
