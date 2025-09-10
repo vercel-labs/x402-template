@@ -49,8 +49,7 @@ const models = [
   },
 ];
 const suggestions = {
-  "Use a paid tool":
-    "Generate a random number between 1 and 10, then add it to 5.",
+  "Use a paid tool": "Generate a random number between 1 and 10.",
   "What's my account balance?": "Check your account balance.",
   "Use an unpaid remotetool":
     "Please greet the user with 'hello-remote' by the name: 'user'",
