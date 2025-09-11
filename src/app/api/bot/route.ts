@@ -74,7 +74,6 @@ export async function GET(request: NextRequest) {
           })}\n\n`;
           controller.enqueue(encoder.encode(finalData));
         } catch (error) {
-          log("Error:", error);
           const errorData = `data: ${JSON.stringify({
             timestamp: new Date().toISOString(),
             type: "error",
@@ -169,5 +168,5 @@ async function mathJob(fetch: Fetch) {
 
   const result = await response.json();
 
-  return { result };
+  return result;
 }

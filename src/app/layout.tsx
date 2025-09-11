@@ -31,7 +31,7 @@ export default function RootLayout({
       >
         <div className="size-full flex flex-col">
           <header className={`${geistSans.className} border-b border-black`}>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-5 w-full">
               <div className="flex flex-row gap-2 text-2xl font-bold">
                 <Link
                   href="https://github.com/vercel-labs/x402-ai-starter"
@@ -72,13 +72,15 @@ export default function RootLayout({
                   </Link>
                 </h2>
               </div>
-              <div className="flex flex-row gap-2">
-                <Link href="/" className="underline">
-                  Chat with paid remote MCP tools
-                </Link>
-                <Link href="/playground" className="underline">
-                  Paid API playground
-                </Link>
+              <div className="w-full flex flex-row items-center justify-center">
+                <div className="flex flex-row gap-5">
+                  <Link href="/" className="underline">
+                    Chat with paid remote MCP tools
+                  </Link>
+                  <Link href="/playground" className="underline">
+                    Paid API playground
+                  </Link>
+                </div>
               </div>
             </div>
           </header>

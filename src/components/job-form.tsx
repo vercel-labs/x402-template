@@ -65,8 +65,8 @@ export function JobForm({ onSubmit, isSubmitting }: JobFormProps) {
               <SelectValue placeholder="Choose a job..." />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="scrape">Web Scraper</SelectItem>
               <SelectItem value="math">Math Calculator</SelectItem>
+              <SelectItem value="scrape">Web Scraper</SelectItem>
             </SelectContent>
           </Select>
 
@@ -79,7 +79,7 @@ export function JobForm({ onSubmit, isSubmitting }: JobFormProps) {
           )}
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="flex items-center space-x-2">
             <Checkbox
               id="enable-payment"

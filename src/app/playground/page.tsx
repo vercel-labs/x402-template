@@ -64,14 +64,6 @@ export default function Playground() {
     }
   };
 
-  const handleResult = (result: any) => {
-    console.log("Job completed with result:", result);
-  };
-
-  const handleError = (error: string) => {
-    console.error("Job failed with error:", error);
-  };
-
   return (
     <div className="container mx-auto p-6">
       <div className="mb-6">
@@ -90,12 +82,7 @@ export default function Playground() {
 
         {/* Right side - Log Viewer */}
         <div className="border rounded-lg">
-          <LogViewer
-            isActive={isJobRunning}
-            eventSource={currentEventSource}
-            onResult={handleResult}
-            onError={handleError}
-          />
+          <LogViewer isActive={isJobRunning} eventSource={currentEventSource} />
         </div>
       </div>
     </div>
