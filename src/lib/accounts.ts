@@ -11,8 +11,10 @@ const chainMap = {
   base: base,
 } as const;
 
+export const chain = chainMap[env.NETWORK];
+
 const publicClient = createPublicClient({
-  chain: chainMap[env.NETWORK],
+  chain,
   transport: http(),
 });
 
