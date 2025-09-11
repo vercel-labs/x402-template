@@ -106,14 +106,19 @@ function makeLoggedFetch(
   log: (...args: unknown[]) => void
 ): typeof globalThis.fetch {
   return async (...args) => {
-    log("Request: ", args[1]?.method ?? "GET", args[0].toString());
+    const info = args[0];
+    const path =
+      info instanceof Request
+        ? new URL(info.url).pathname
+        : new URL(info).pathname;
+    log("Request: ", args[1]?.method ?? "GET", path);
     log("Request Headers: ", args[1]?.headers ?? {});
     const rawResponse = await fetch(...args);
     const clonedResponse = rawResponse.clone();
     log(
       "Response: ",
       args[1]?.method ?? "GET",
-      args[0].toString(),
+      path,
       clonedResponse.status,
       clonedResponse.statusText
     );
