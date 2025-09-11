@@ -28,9 +28,15 @@ export async function GET(request: NextRequest) {
     start(controller) {
       const log = (...args: unknown[]) => {
         const message = args
-          .map((arg) =>
-            typeof arg === "string" ? arg : JSON.stringify(arg, null, 2)
-          )
+          .map((arg) => {
+            if (typeof arg === "string") {
+              return arg;
+            } else if (typeof arg === "object" && arg !== null) {
+              return JSON.stringify(arg, null, 2);
+            } else {
+              return String(arg);
+            }
+          })
           .join(" ");
 
         const sseData = `data: ${JSON.stringify({
@@ -53,10 +59,8 @@ export async function GET(request: NextRequest) {
           let result;
           if (job === "scrape") {
             result = await scrapeJob(fetch, isBot || actAsScraper);
-            log("result", result);
           } else if (job === "math") {
             result = await mathJob(fetch);
-            log("result", result);
           } else {
             log("Invalid job specified");
             result = { error: "Invalid job" };

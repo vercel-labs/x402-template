@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { CodeBlock } from "@/components/ai-elements/code-block";
 
 interface LogEntry {
   timestamp: string;
@@ -17,6 +18,33 @@ interface LogViewerProps {
   onResult?: (result: any) => void;
   onError?: (error: string) => void;
 }
+
+// Helper function to detect and parse JSON content
+const parseLogContent = (
+  message: string
+):
+  | { hasJson: true; prefix: string; jsonContent: string; suffix: string }
+  | { hasJson: false; content: string } => {
+  // Try to detect JSON patterns in the message
+  const jsonMatch = message.match(/({[\s\S]*}|\[[\s\S]*\])/);
+  if (jsonMatch) {
+    try {
+      const jsonStr = jsonMatch[1];
+      JSON.parse(jsonStr); // Validate it's valid JSON
+      const prefix = message.substring(0, jsonMatch.index);
+      const suffix = message.substring((jsonMatch.index || 0) + jsonStr.length);
+      return {
+        hasJson: true,
+        prefix: prefix.trim(),
+        jsonContent: jsonStr,
+        suffix: suffix.trim(),
+      };
+    } catch {
+      // Not valid JSON, treat as plain text
+    }
+  }
+  return { hasJson: false, content: message };
+};
 
 export function LogViewer({
   isActive,
@@ -86,18 +114,76 @@ export function LogViewer({
                 {new Date(log.timestamp).toLocaleTimeString()}
               </div>
               <div
-                className={`p-2 rounded text-xs ${
+                className={`rounded ${
                   log.type === "error"
-                    ? "bg-red-50 text-red-800 border border-red-200"
+                    ? "bg-red-50 border border-red-200"
                     : log.type === "result"
-                    ? "bg-green-50 text-green-800 border border-green-200"
-                    : "bg-gray-50 text-gray-800 border border-gray-200"
+                    ? "bg-green-50 border border-green-200"
+                    : "bg-gray-50 border border-gray-200"
                 }`}
               >
-                {log.message ||
-                  (log.type === "result"
-                    ? JSON.stringify(log.result, null, 2)
-                    : log.error)}
+                {(() => {
+                  const content =
+                    log.message ||
+                    (log.type === "result"
+                      ? JSON.stringify(log.result, null, 2)
+                      : log.error) ||
+                    "";
+
+                  const parsed = parseLogContent(content);
+
+                  if (parsed.hasJson) {
+                    return (
+                      <div className="p-2">
+                        {parsed.prefix && (
+                          <div
+                            className={`text-xs mb-2 ${
+                              log.type === "error"
+                                ? "text-red-800"
+                                : log.type === "result"
+                                ? "text-green-800"
+                                : "text-gray-800"
+                            }`}
+                          >
+                            {parsed.prefix}
+                          </div>
+                        )}
+                        <CodeBlock
+                          code={parsed.jsonContent}
+                          language="json"
+                          className="text-xs"
+                        />
+                        {parsed.suffix && (
+                          <div
+                            className={`text-xs mt-2 ${
+                              log.type === "error"
+                                ? "text-red-800"
+                                : log.type === "result"
+                                ? "text-green-800"
+                                : "text-gray-800"
+                            }`}
+                          >
+                            {parsed.suffix}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div
+                        className={`p-2 text-xs ${
+                          log.type === "error"
+                            ? "text-red-800"
+                            : log.type === "result"
+                            ? "text-green-800"
+                            : "text-gray-800"
+                        }`}
+                      >
+                        {parsed.content}
+                      </div>
+                    );
+                  }
+                })()}
               </div>
             </div>
           ))}
