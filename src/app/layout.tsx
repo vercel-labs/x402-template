@@ -33,7 +33,7 @@ export default function RootLayout({
             <div className="flex flex-col gap-2">
               <div className="flex flex-row gap-2 text-2xl font-bold">
                 <Link
-                  href="https://github.com/vercel-labs/x402-template"
+                  href="https://github.com/vercel-labs/x402-ai-starter"
                   className="underline"
                 >
                   <h1>x402 AI Starter Kit</h1>

@@ -4,7 +4,7 @@
 
 This template built with [Next.js](https://nextjs.org), [AI SDK](https://ai-sdk.dev), [AI Elements](https://ai-elements.dev), and [AI Gateway](https://vercel.com/ai-gateway) and the [Coinbase CDP](https://docs.cdp.coinbase.com/) shows off using x402 with a modern AI stack.
 
-**Demo: [https://x402-template.labs.vercel.dev/](https://x402-template.labs.vercel.dev/)**
+**Demo: [https://x402-ai-starter.labs.vercel.dev/](https://x402-ai-starter.labs.vercel.dev/)**
 
 ## Features
 
@@ -27,8 +27,8 @@ This template built with [Next.js](https://nextjs.org), [AI SDK](https://ai-sdk.
 ## Getting Started
 
 ```bash
-git clone https://github.com/vercel-labs/x402-template
-cd x402-template
+git clone https://github.com/vercel-labs/x402-ai-starter
+cd x402-ai-starter
 pnpm install
 ```
 
