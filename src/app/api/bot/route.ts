@@ -1,9 +1,11 @@
 import { env } from "@/lib/env";
 import * as cheerio from "cheerio";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { wrapFetchWithPayment } from "x402-fetch";
 import { chain, getOrCreatePurchaserAccount } from "@/lib/accounts";
 import { createWalletClient, http } from "viem";
+
+type Fetch = (input: RequestInfo, init?: RequestInit) => Promise<Response>;
 
 const account = await getOrCreatePurchaserAccount();
 const walletClient = createWalletClient({
@@ -12,36 +14,33 @@ const walletClient = createWalletClient({
   account,
 });
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const enablePayment = request.headers.get("enable-payment") === "true";
-  const userAgent = request.headers.get("user-agent");
+  const isBot = request.headers.get("user-agent")?.includes("bot") ?? false;
+  const job = request.nextUrl.searchParams.get("job");
 
   const loggedFetch = makeLoggedFetch(console.log);
   const fetch = enablePayment
     ? wrapFetchWithPayment(loggedFetch, walletClient as any) // TODO: fix type
     : loggedFetch;
 
-  const response = await fetch(`${env.URL}/blog`, {
-    headers: {
-      ...(userAgent ? { "user-agent": userAgent } : {}),
-    },
-  });
-
-  if (!response.ok) {
-    return new Response("An error occurred", { status: 500 });
+  console.log("initiating job", job);
+  if (job === "scrape") {
+    const result = await scrapeJob(fetch, isBot);
+    console.log("result", JSON.stringify(result, null, 2));
+    return NextResponse.json(result);
+  } else if (job === "math") {
+    const result = await mathJob(fetch);
+    console.log("result", JSON.stringify(result, null, 2));
+    return NextResponse.json(result);
+  } else {
+    return new Response("Invalid job", { status: 400 });
   }
-
-  const blogData = await response.text();
-
-  const $ = cheerio.load(blogData);
-  const blogTitles = $("h2")
-    .map((_, el) => $(el).text().trim())
-    .get();
-
-  return NextResponse.json({ blogTitles });
 }
 
-function makeLoggedFetch(log: (...args: unknown[]) => void): typeof fetch {
+function makeLoggedFetch(
+  log: (...args: unknown[]) => void
+): typeof globalThis.fetch {
   return async (...args) => {
     log("Request: ", args[1]?.method ?? "GET", args[0].toString());
     log("Request Headers: ", JSON.stringify(args[1]?.headers ?? {}, null, 2));
@@ -64,4 +63,46 @@ function makeLoggedFetch(log: (...args: unknown[]) => void): typeof fetch {
     }
     return rawResponse;
   };
+}
+
+async function scrapeJob(fetch: Fetch, isBot: boolean) {
+  const response = await fetch(`${env.URL}/blog`, {
+    headers: {
+      ...(isBot ? { "user-agent": "Bot" } : {}),
+    },
+  });
+
+  if (!response.ok) {
+    return new Response("An error occurred", { status: 500 });
+  }
+
+  const blogData = await response.text();
+
+  const $ = cheerio.load(blogData);
+  const blogTitles = $("h2")
+    .map((_, el) => $(el).text().trim())
+    .get();
+
+  return { blogTitles };
+}
+
+async function mathJob(fetch: Fetch) {
+  const response = await fetch(`${env.URL}/api/add`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      a: 1,
+      b: 2,
+    }),
+  });
+
+  if (!response.ok) {
+    return new Response("An error occurred", { status: 500 });
+  }
+
+  const result = await response.json();
+
+  return { result };
 }

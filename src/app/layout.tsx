@@ -29,42 +29,50 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
       >
         <div className="size-full flex flex-col">
-          <header
-            className={`${geistSans.className} text-2xl font-bold border-b border-black`}
-          >
-            <div className="flex flex-row gap-2">
-              <h1>x402 AI Starter Kit</h1> -
-              <h2>
-                powered by:{" "}
-                <Link href="https://nextjs.org" className="underline">
-                  Next.js
+          <header className={`${geistSans.className} border-b border-black`}>
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-row gap-2 text-2xl font-bold">
+                <h1>x402 AI Starter Kit</h1> -
+                <h2>
+                  powered by:{" "}
+                  <Link href="https://nextjs.org" className="underline">
+                    Next.js
+                  </Link>
+                  ,{" "}
+                  <Link href="https://ai-sdk.dev" className="underline">
+                    AI SDK
+                  </Link>
+                  ,{" "}
+                  <Link
+                    href="https://vercel.com/ai-gateway"
+                    className="underline"
+                  >
+                    AI Gateway
+                  </Link>
+                  ,{" "}
+                  <Link
+                    href="https://ai-sdk.dev/elements/overview"
+                    className="underline"
+                  >
+                    AI Elements
+                  </Link>
+                  , and the{" "}
+                  <Link
+                    href="https://docs.cdp.coinbase.com/"
+                    className="underline"
+                  >
+                    Coinbase CDP
+                  </Link>
+                </h2>
+              </div>
+              <div className="flex flex-row gap-2">
+                <Link href="/" className="underline">
+                  Chat with paid remote MCP tools
                 </Link>
-                ,{" "}
-                <Link href="https://ai-sdk.dev" className="underline">
-                  AI SDK
+                <Link href="/playground" className="underline">
+                  Paid API playground
                 </Link>
-                ,{" "}
-                <Link
-                  href="https://vercel.com/ai-gateway"
-                  className="underline"
-                >
-                  AI Gateway
-                </Link>
-                ,{" "}
-                <Link
-                  href="https://ai-sdk.dev/elements/overview"
-                  className="underline"
-                >
-                  AI Elements
-                </Link>
-                , and the{" "}
-                <Link
-                  href="https://docs.cdp.coinbase.com/"
-                  className="underline"
-                >
-                  Coinbase CDP
-                </Link>
-              </h2>
+              </div>
             </div>
           </header>
 
