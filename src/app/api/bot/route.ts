@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { wrapFetchWithPayment } from "x402-fetch";
 import { chain, getOrCreatePurchaserAccount } from "@/lib/accounts";
 import { createWalletClient, http } from "viem";
+import { waitUntil } from "@vercel/functions";
 
 type Fetch = (input: RequestInfo, init?: RequestInit) => Promise<Response>;
 
@@ -14,28 +15,88 @@ const walletClient = createWalletClient({
   account,
 });
 
-export async function POST(request: NextRequest) {
-  const enablePayment = request.headers.get("enable-payment") === "true";
+export async function GET(request: NextRequest) {
+  const enablePayment =
+    request.nextUrl.searchParams.get("enable-payment") === "true";
   const isBot = request.headers.get("user-agent")?.includes("bot") ?? false;
+  const actAsScraper =
+    request.nextUrl.searchParams.get("act-as-scraper") === "true";
   const job = request.nextUrl.searchParams.get("job");
 
-  const loggedFetch = makeLoggedFetch(console.log);
-  const fetch = enablePayment
-    ? wrapFetchWithPayment(loggedFetch, walletClient as any) // TODO: fix type
-    : loggedFetch;
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    start(controller) {
+      const log = (...args: unknown[]) => {
+        const message = args
+          .map((arg) =>
+            typeof arg === "string" ? arg : JSON.stringify(arg, null, 2)
+          )
+          .join(" ");
 
-  console.log("initiating job", job);
-  if (job === "scrape") {
-    const result = await scrapeJob(fetch, isBot);
-    console.log("result", JSON.stringify(result, null, 2));
-    return NextResponse.json(result);
-  } else if (job === "math") {
-    const result = await mathJob(fetch);
-    console.log("result", JSON.stringify(result, null, 2));
-    return NextResponse.json(result);
-  } else {
-    return new Response("Invalid job", { status: 400 });
-  }
+        const sseData = `data: ${JSON.stringify({
+          timestamp: new Date().toISOString(),
+          message,
+        })}\n\n`;
+
+        controller.enqueue(encoder.encode(sseData));
+        console.log(...args);
+      };
+
+      const loggedFetch = makeLoggedFetch(log);
+      const fetch = enablePayment
+        ? wrapFetchWithPayment(loggedFetch, walletClient as any) // TODO: fix type
+        : loggedFetch;
+
+      const jobPromise = (async () => {
+        try {
+          log("initiating job", job);
+          let result;
+          if (job === "scrape") {
+            result = await scrapeJob(fetch, isBot || actAsScraper);
+            log("result", result);
+          } else if (job === "math") {
+            result = await mathJob(fetch);
+            log("result", result);
+          } else {
+            log("Invalid job specified");
+            result = { error: "Invalid job" };
+          }
+
+          // Send final result
+          const finalData = `data: ${JSON.stringify({
+            timestamp: new Date().toISOString(),
+            type: "result",
+            result,
+          })}\n\n`;
+          controller.enqueue(encoder.encode(finalData));
+        } catch (error) {
+          log("Error:", error);
+          const errorData = `data: ${JSON.stringify({
+            timestamp: new Date().toISOString(),
+            type: "error",
+            error: error instanceof Error ? error.message : "Unknown error",
+          })}\n\n`;
+          controller.enqueue(encoder.encode(errorData));
+        } finally {
+          controller.close();
+        }
+      })();
+
+      waitUntil(jobPromise);
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET",
+      "Access-Control-Allow-Headers":
+        "Content-Type, enable-payment, act-as-scraper",
+    },
+  });
 }
 
 function makeLoggedFetch(
@@ -43,7 +104,7 @@ function makeLoggedFetch(
 ): typeof globalThis.fetch {
   return async (...args) => {
     log("Request: ", args[1]?.method ?? "GET", args[0].toString());
-    log("Request Headers: ", JSON.stringify(args[1]?.headers ?? {}, null, 2));
+    log("Request Headers: ", args[1]?.headers ?? {});
     const rawResponse = await fetch(...args);
     const clonedResponse = rawResponse.clone();
     log(
@@ -53,13 +114,13 @@ function makeLoggedFetch(
       clonedResponse.status,
       clonedResponse.statusText
     );
-    log("Response Headers: ", JSON.stringify(clonedResponse.headers, null, 2));
+    log("Response Headers: ", clonedResponse.headers);
     const body = await clonedResponse.text();
     try {
       const json = JSON.parse(body);
-      log("Response Body: ", JSON.stringify(json, null, 2));
+      log("Response Body: ", json);
     } catch (error) {
-      log("Response Body: ", JSON.stringify(body, null, 2));
+      log("Response Body: ", body);
     }
     return rawResponse;
   };
