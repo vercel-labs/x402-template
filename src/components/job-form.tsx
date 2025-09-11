@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Link from "next/link";
 
 interface JobFormProps {
   onSubmit: (
@@ -21,9 +22,18 @@ interface JobFormProps {
 }
 
 const JOB_DESCRIPTIONS = {
-  scrape:
-    "Scrapes the blog page to extract article titles. Can optionally act as a web scraper by setting the user-agent to 'Bot'.",
-  math: "Performs a simple math operation by calling the internal /api/add endpoint with predefined values.",
+  math: "Performs a simple math operation by calling the x402 paywalled `/api/add` endpoint with predefined values.",
+  scrape: (
+    <>
+      Scrapes the{" "}
+      <Link href="/blog" className="underline">
+        /blog
+      </Link>{" "}
+      page to extract article titles. Can optionally act as a web scraper by
+      setting the user-agent to 'Bot'. If enabled, this will trigger the
+      paywall.
+    </>
+  ),
 };
 
 export function JobForm({ onSubmit, isSubmitting }: JobFormProps) {
@@ -84,7 +94,8 @@ export function JobForm({ onSubmit, isSubmitting }: JobFormProps) {
             </label>
           </div>
           <p className="text-xs text-muted-foreground ml-6">
-            Use x402-fetch wrapper for HTTP requests with payment capabilities
+            Use `x402-fetch` fetch wrapper for HTTP requests to automatically
+            retry 402ed requests with payment
           </p>
 
           {selectedJob === "scrape" && (

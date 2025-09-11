@@ -73,15 +73,16 @@ export default function Playground() {
   };
 
   return (
-    <div className="container mx-auto p-6 h-screen">
+    <div className="container mx-auto p-6">
       <div className="mb-6">
         <h1 className="text-3xl font-bold">Job Playground</h1>
         <p className="text-muted-foreground mt-2">
-          Test different jobs and watch real-time server logs
+          Test different jobs that use x402 paywalled endpoints and watch
+          real-time server logs
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-200px)]">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left side - Job Form */}
         <div className="border rounded-lg">
           <JobForm onSubmit={handleJobSubmit} isSubmitting={isJobRunning} />

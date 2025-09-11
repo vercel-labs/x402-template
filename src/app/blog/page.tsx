@@ -1,6 +1,17 @@
+import Link from "next/link";
+
 export default function BlogPage() {
   return (
     <main className="max-w-4xl mx-auto py-12 px-4">
+      <p>
+        (this page is protected by an x402 paywall only for bots, to simulate
+        being detected as a bot you can set{" "}
+        <Link href="/blog?bot=true" className="underline">
+          ?bot=true
+        </Link>
+        )
+      </p>
+      <div className="py-4"></div>
       <h1 className="text-4xl font-bold mb-8">My Blog</h1>
 
       <div className="space-y-12">

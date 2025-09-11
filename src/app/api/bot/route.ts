@@ -138,7 +138,7 @@ async function scrapeJob(fetch: Fetch, isBot: boolean) {
   });
 
   if (!response.ok) {
-    return new Response("An error occurred", { status: 500 });
+    throw new Error("An error occurred: " + response.statusText);
   }
 
   const blogData = await response.text();
@@ -164,7 +164,7 @@ async function mathJob(fetch: Fetch) {
   });
 
   if (!response.ok) {
-    return new Response("An error occurred", { status: 500 });
+    throw new Error("An error occurred: " + response.statusText);
   }
 
   const result = await response.json();

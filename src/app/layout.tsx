@@ -32,7 +32,13 @@ export default function RootLayout({
           <header className={`${geistSans.className} border-b border-black`}>
             <div className="flex flex-col gap-2">
               <div className="flex flex-row gap-2 text-2xl font-bold">
-                <h1>x402 AI Starter Kit</h1> -
+                <Link
+                  href="https://github.com/vercel-labs/x402-template"
+                  className="underline"
+                >
+                  <h1>x402 AI Starter Kit</h1>
+                </Link>{" "}
+                -
                 <h2>
                   powered by:{" "}
                   <Link href="https://nextjs.org" className="underline">

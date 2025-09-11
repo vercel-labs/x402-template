@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { CodeBlock } from "@/components/ai-elements/code-block";
 
 interface LogEntry {
@@ -87,7 +86,7 @@ export function LogViewer({
   }, [eventSource, isActive, onResult, onError]);
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col max-w-full">
       <div className="border-b p-3">
         <h3 className="font-semibold">Server Logs</h3>
         <div className="flex items-center gap-2 mt-1">
@@ -101,20 +100,20 @@ export function LogViewer({
           </span>
         </div>
       </div>
-      <ScrollArea className="flex-1 p-3">
-        <div className="space-y-2">
+      <div className="flex-1 p-3">
+        <div className="space-y-2 w-full max-w-full">
           {logs.length === 0 && !isActive && (
             <div className="text-sm text-muted-foreground italic">
               No logs yet. Submit a job to see real-time logs.
             </div>
           )}
           {logs.map((log, index) => (
-            <div key={index} className="text-sm font-mono">
+            <div key={index} className="text-sm font-mono w-full max-w-full">
               <div className="text-xs text-muted-foreground mb-1">
                 {new Date(log.timestamp).toLocaleTimeString()}
               </div>
               <div
-                className={`rounded ${
+                className={`rounded max-h-96 overflow-auto w-full max-w-full ${
                   log.type === "error"
                     ? "bg-red-50 border border-red-200"
                     : log.type === "result"
@@ -151,7 +150,7 @@ export function LogViewer({
                         <CodeBlock
                           code={parsed.jsonContent}
                           language="json"
-                          className="text-xs"
+                          className="text-xs w-full max-w-full overflow-hidden"
                         />
                         {parsed.suffix && (
                           <div
@@ -188,7 +187,7 @@ export function LogViewer({
             </div>
           ))}
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 }
