@@ -20,7 +20,7 @@ const publicClient = createPublicClient({
 
 export async function getOrCreatePurchaserAccount(): Promise<Account> {
   const account = await cdp.evm.getOrCreateAccount({
-    name: "Purchaser-2",
+    name: "Purchaser",
   });
   const balances = await account.listTokenBalances({
     network: env.NETWORK,
@@ -53,7 +53,7 @@ export async function getOrCreatePurchaserAccount(): Promise<Account> {
 
 export async function getOrCreateSellerAccount(): Promise<Account> {
   const account = await cdp.evm.getOrCreateAccount({
-    name: "Seller-2",
+    name: "Seller",
   });
   return toAccount(account);
 }
