@@ -31,8 +31,8 @@ export default function RootLayout({
       >
         <div className="size-full flex flex-col">
           <header className={`${geistSans.className} border-b border-black`}>
-            <div className="flex flex-col gap-5 w-full">
-              <div className="flex flex-row gap-2 text-2xl font-bold">
+            <div className="flex flex-col gap-2 w-full">
+              <div className="flex flex-row gap-2 text-xl font-bold items-center justify-center">
                 <Link
                   href="https://github.com/vercel-labs/x402-ai-starter"
                   className="underline"
