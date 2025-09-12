@@ -28,7 +28,7 @@ const handler = createPaidMcpHandler(
     server.paidTool(
       "add",
       "Add two numbers",
-      { price: 0.01 },
+      { price: 0.001 },
       {
         a: z.number().int(),
         b: z.number().int(),

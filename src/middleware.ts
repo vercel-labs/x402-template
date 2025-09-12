@@ -12,7 +12,7 @@ export const x402Middleware = paymentMiddleware(
   {
     // pages
     "/blog": {
-      price: "$0.01",
+      price: "$0.001",
       network,
       config: {
         description: "Access to protected content",
@@ -20,7 +20,7 @@ export const x402Middleware = paymentMiddleware(
     },
     // api routes
     "/api/add": {
-      price: "$0.05",
+      price: "$0.005",
       network,
       config: {
         description: "Access to protected content",
