@@ -19,8 +19,8 @@ export const env = createEnv({
     CDP_API_KEY_ID: process.env.CDP_API_KEY_ID,
     CDP_API_KEY_SECRET: process.env.CDP_API_KEY_SECRET,
     NETWORK: process.env.NETWORK,
-    URL: process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
+    URL: process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
       : undefined,
   },
 

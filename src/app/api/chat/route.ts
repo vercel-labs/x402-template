@@ -16,18 +16,7 @@ export const POST = async (request: Request) => {
   const account = await getOrCreatePurchaserAccount();
 
   const mcpClient = await createMCPClient({
-    transport: new StreamableHTTPClientTransport(new URL("/mcp", env.URL), {
-      requestInit: {
-        headers: {
-          ...(process.env.VERCEL_AUTOMATION_BYPASS_SECRET
-            ? {
-                "x-vercel-protection-bypass":
-                  process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
-              }
-            : {}),
-        },
-      },
-    }),
+    transport: new StreamableHTTPClientTransport(new URL("/mcp", env.URL)),
   }).then((client) => withPayment(client, { account, network: env.NETWORK }));
 
   const tools = await mcpClient.tools();
