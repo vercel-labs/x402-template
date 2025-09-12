@@ -105,8 +105,8 @@ importers:
         specifier: ^0.6.0
         version: 0.6.0(@solana/sysvars@2.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.2))(@tanstack/query-core@5.87.1)(@tanstack/react-query@5.87.1(react@19.1.0))(@types/react@19.1.12)(@vercel/functions@3.1.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(react@19.1.0)(typescript@5.9.2)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       x402-mcp:
-        specifier: 0.0.4
-        version: 0.0.4(@tanstack/query-core@5.87.1)(@tanstack/react-query@5.87.1(react@19.1.0))(@types/react@19.1.12)(@vercel/functions@3.1.0)(ai@5.0.39(zod@3.25.76))(bufferutil@4.0.9)(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.2)(utf-8-validate@5.0.10)(viem@2.37.5(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76))
+        specifier: 0.0.5
+        version: 0.0.5(@tanstack/query-core@5.87.1)(@tanstack/react-query@5.87.1(react@19.1.0))(@types/react@19.1.12)(@vercel/functions@3.1.0)(ai@5.0.39(zod@3.25.76))(bufferutil@4.0.9)(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.2)(utf-8-validate@5.0.10)(viem@2.37.5(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76))
       x402-next:
         specifier: ^0.6.0
         version: 0.6.0(@solana/sysvars@2.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.2))(@tanstack/query-core@5.87.1)(@tanstack/react-query@5.87.1(react@19.1.0))(@types/react@19.1.12)(@vercel/functions@3.1.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.2)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
@@ -4314,8 +4314,8 @@ packages:
   x402-fetch@0.6.0:
     resolution: {integrity: sha512-c7ZQQOjgBWyX9xbmRCliUguVeG0RCofTlcnPKBrAgNYxEo8p/yuQr2PRvyN9tdQdXVTlGgIsII7GO1wLHJpLhA==}
 
-  x402-mcp@0.0.4:
-    resolution: {integrity: sha512-sfuwPKpA8XnJeJ34N2WcAT/9kIEuffPf0BTQX1aTPlcklp8euennODyDl4Ck98ZuqePHpIZq6HmM1QZ9l56YWw==}
+  x402-mcp@0.0.5:
+    resolution: {integrity: sha512-3ndQ7TtxalUELbhzrcbwxFgwgN20O/Jn0CTZZcxkBjloDU00ykuN/MJqjKqtAPw+shOIW98cQpOcRzNoNlAyVA==}
     peerDependencies:
       ai: '>=5.0.0'
       viem: '>=2.37.0'
@@ -10136,7 +10136,7 @@ snapshots:
       - utf-8-validate
       - ws
 
-  x402-mcp@0.0.4(@tanstack/query-core@5.87.1)(@tanstack/react-query@5.87.1(react@19.1.0))(@types/react@19.1.12)(@vercel/functions@3.1.0)(ai@5.0.39(zod@3.25.76))(bufferutil@4.0.9)(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.2)(utf-8-validate@5.0.10)(viem@2.37.5(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)):
+  x402-mcp@0.0.5(@tanstack/query-core@5.87.1)(@tanstack/react-query@5.87.1(react@19.1.0))(@types/react@19.1.12)(@vercel/functions@3.1.0)(ai@5.0.39(zod@3.25.76))(bufferutil@4.0.9)(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.2)(utf-8-validate@5.0.10)(viem@2.37.5(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)):
     dependencies:
       '@modelcontextprotocol/sdk': 1.17.5
       ai: 5.0.39(zod@3.25.76)
