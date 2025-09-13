@@ -57,9 +57,15 @@ const suggestions = {
     "Please greet the user with 'hello-local' by the name: 'user'",
 };
 
+const providerModes = [
+  { name: "AI Gateway", value: "gateway" },
+  { name: "AI SDK", value: "sdk" },
+];
+
 const ChatBotDemo = () => {
   const [input, setInput] = useState("");
   const [model, setModel] = useState<string>(models[0].value);
+  const [providerMode, setProviderMode] = useState<string>("gateway");
   const { messages, sendMessage, status } = useChat({
     onError: (error) => console.error(error),
   });
@@ -72,6 +78,7 @@ const ChatBotDemo = () => {
         {
           body: {
             model: model,
+            providerMode: providerMode,
           },
         }
       );
@@ -85,6 +92,7 @@ const ChatBotDemo = () => {
       {
         body: {
           model: model,
+          providerMode: providerMode,
         },
       }
     );
@@ -175,6 +183,26 @@ const ChatBotDemo = () => {
           />
           <PromptInputToolbar>
             <PromptInputTools>
+              <PromptInputModelSelect
+                onValueChange={(value) => {
+                  setProviderMode(value);
+                }}
+                value={providerMode}
+              >
+                <PromptInputModelSelectTrigger>
+                  <PromptInputModelSelectValue />
+                </PromptInputModelSelectTrigger>
+                <PromptInputModelSelectContent>
+                  {providerModes.map((mode) => (
+                    <PromptInputModelSelectItem
+                      key={mode.value}
+                      value={mode.value}
+                    >
+                      {mode.name}
+                    </PromptInputModelSelectItem>
+                  ))}
+                </PromptInputModelSelectContent>
+              </PromptInputModelSelect>
               <PromptInputModelSelect
                 onValueChange={(value) => {
                   setModel(value);
