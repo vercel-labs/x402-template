@@ -49,7 +49,7 @@ pnpm install
 Using AI Gateway requires either a Vercel OIDC token, or an API Key.
 To get an OIDC token, simply run `vc link` then `vc env pull`. An API can be obtained from the [AI Gateway dashboard](https://vercel.com/ai-gateway).
 
-Using AI Gateway isn't required, you can use any AI SDK model provider and its associated credentials.
+Using AI Gateway isn't required, you can use any AI SDK model provider and its associated credentials. The app includes a provider mode selector to switch between AI Gateway and direct AI SDK access (e.g., using `OPENAI_API_KEY`).
 
 3. Run `pnpm dev`
 
